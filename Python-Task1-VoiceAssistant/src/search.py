@@ -5,20 +5,8 @@ import urllib.parse
 class SearchService:
 
     @staticmethod
-    def open_google():
-        webbrowser.open("https://www.google.com")
-
-    @staticmethod
-    def open_youtube():
-        webbrowser.open("https://www.youtube.com")
-
-    @staticmethod
-    def open_github():
-        webbrowser.open("https://github.com")
-
-    @staticmethod
-    def open_chatgpt():
-        webbrowser.open("https://chat.openai.com")
+    def open_website(url):
+        webbrowser.open(url)
 
     @staticmethod
     def google_search(query):

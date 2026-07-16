@@ -1,0 +1,27 @@
+{
+    "greetings": [
+        "hello",
+        "hi",
+        "hey"
+    ],
+
+    "exit": [
+        "exit",
+        "quit",
+        "stop"
+    ],
+    
+    "websites": {
+        "google": "https://www.google.com",
+
+        "youtube": "https://www.youtube.com",
+
+        "github": "https://github.com",
+
+        "chatgpt": "https://chatgpt.com",
+
+        "chat gpt": "https://chatgpt.com",
+
+        "chat gt": "https://chatgpt.com"
+    }
+}
