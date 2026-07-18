@@ -1,14 +1,19 @@
+from urllib import response
+from ai_chat import AIChat
+
 from utils import current_time, current_date
 from search import SearchService
 from config_loader import CONFIG
 from weather import WeatherService
-
+from reminder_manager import ReminderManager
+import re
 
 class CommandRouter:
 
     def __init__(self):
         self.weather_service = WeatherService()
-
+        self.reminder_manager = ReminderManager()
+        self.ai = AIChat()
     def process(self, command: str):
 
         cmd = command.lower().strip()
@@ -228,6 +233,98 @@ class CommandRouter:
 
             )
 
+        # -------------------------
+        # Reminder
+        # -------------------------
+
+        elif "remind" in cmd:
+
+            # Pattern 1:
+            # remind me in 10 seconds to drink water
+            match = re.search(
+                r"remind me in (\d+) (second|seconds|minute|minutes|hour|hours) to (.+)",
+                cmd,
+            )
+
+            if match:
+
+                amount = int(match.group(1))
+                unit = match.group(2)
+                message = match.group(3)
+
+                if "second" in unit:
+                    seconds = amount
+                elif "minute" in unit:
+                    seconds = amount * 60
+                else:
+                    seconds = amount * 3600
+
+                self.reminder_manager.add_reminder(seconds, message)
+
+                return (
+                    f"Okay. I will remind you in {amount} {unit} to {message}.",
+                    False,
+                )
+
+            # Pattern 2:
+            # remind me to drink water in 10 seconds
+            match = re.search(
+                r"remind me to (.+) in (\d+) (second|seconds|minute|minutes|hour|hours)",
+                cmd,
+            )
+
+            if match:
+
+                message = match.group(1)
+                amount = int(match.group(2))
+                unit = match.group(3)
+
+                if "second" in unit:
+                    seconds = amount
+                elif "minute" in unit:
+                    seconds = amount * 60
+                else:
+                    seconds = amount * 3600
+
+                self.reminder_manager.add_reminder(seconds, message)
+
+                return (
+                    f"Okay. I will remind you in {amount} {unit} to {message}.",
+                    False,
+                )
+
+            # Pattern 3:
+            # remind me to dance
+            match = re.search(
+                r"remind me to (.+)",
+                cmd,
+            )
+
+            if match:
+
+                return (
+                    "When should I remind you?",
+                    False,
+                )
+
+            # Pattern 4:
+            # remind me in 10 minutes
+            match = re.search(
+                r"remind me in (\d+) (second|seconds|minute|minutes|hour|hours)",
+                cmd,
+            )
+
+            if match:
+
+                return (
+                    "What should I remind you about?",
+                    False,
+                )
+
+            return (
+                "Please say something like 'Remind me in 10 minutes to drink water.'",
+                False,
+            )
         # --------------------------
         # Exit
         # --------------------------
@@ -235,21 +332,19 @@ class CommandRouter:
         elif any(word in words for word in CONFIG["exit"]):
 
             return (
-
                 "Goodbye Anurag. Have a wonderful day.",
-
                 True
-
             )
 
         # --------------------------
-        # Unknown
+        # Unknown Command
         # --------------------------
 
+        else:
+
+            response = self.ai.ask(command)
+
         return (
-
-            "Sorry. I do not know this command yet.",
-
-            False
-
-        )
+    response,
+    False
+)
