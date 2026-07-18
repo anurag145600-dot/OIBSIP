@@ -12,7 +12,6 @@ class CommandRouter:
     def process(self, command: str):
 
         cmd = command.lower().strip()
-
         words = cmd.split()
 
         # --------------------------
@@ -42,10 +41,10 @@ class CommandRouter:
         # --------------------------
 
         elif (
-    "date" in cmd
-    or "day" in cmd
-    or "today" in cmd
-):
+            "date" in cmd
+            or "day" in cmd
+            or "today" in cmd
+        ):
 
             return (
                 f"Today is {current_date()}",
@@ -53,7 +52,7 @@ class CommandRouter:
             )
 
         # --------------------------
-        # Open Websites
+        # Open Website
         # --------------------------
 
         elif cmd.startswith("open"):
@@ -74,50 +73,97 @@ class CommandRouter:
                 SearchService.open_website(
                     websites[site]
                 )
+
                 display_name = {
-                    "chatgpt": "ChatGPT",
-                    "chat gpt": "ChatGPT",
-                    "chat gt": "ChatGPT",
+
+                    "google": "Google",
+
                     "youtube": "YouTube",
+
                     "github": "GitHub",
-                    "google": "Google"
+
+                    "chatgpt": "ChatGPT",
+
+                    "chat gpt": "ChatGPT",
+
+                    "chat gt": "ChatGPT"
+
                 }
 
                 return (
+
                     f"Opening {display_name.get(site, site.title())}.",
+
                     False
+
                 )
+
             return (
+
                 f"I don't know how to open {site}.",
+
                 False
+
             )
+
         # --------------------------
         # Weather
         # --------------------------
 
         elif "weather" in cmd or "temperature" in cmd:
 
-            city = "Delhi"
-
             if " in " in cmd:
 
-                city = cmd.split(" in ", 1)[1].strip()
+                city = cmd.split(
+                    " in ",
+                    1
+                )[1].strip()
+
+            else:
+
+                city = self.weather_service.get_current_city()
 
             result = self.weather_service.get_weather(city)
 
             if result is None:
 
                 return (
+
                     f"Sorry, I could not find weather information for {city}.",
+
                     False
+
                 )
 
-            return (
-                f"The weather in {result['city']} is {result['description']}. "
-                f"The temperature is {result['temperature']} degree Celsius "
-                f"with humidity {result['humidity']} percent.",
-                False
+            response = (
+
+                f"The current weather in {result['city']} is "
+                f"{result['description']}. "
+                f"The temperature is "
+                f"{result['temperature']} degree Celsius. "
+                f"It feels like "
+                f"{result['feels_like']} degree Celsius. "
+                f"Humidity is "
+                f"{result['humidity']} percent. "
+                f"Wind speed is "
+                f"{result['wind']} meters per second. "
+                f"Visibility is "
+                f"{result['visibility']} kilometers. "
+                f"Sunrise is at "
+                f"{result['sunrise']}. "
+                f"Sunset is at "
+                f"{result['sunset']}."
+
             )
+
+            return (
+
+                response,
+
+                False
+
+            )
+
         # --------------------------
         # Google Search
         # --------------------------
@@ -133,15 +179,21 @@ class CommandRouter:
             if not query:
 
                 return (
+
                     "Please tell me what you want to search.",
+
                     False
+
                 )
 
             SearchService.google_search(query)
 
             return (
+
                 f"Searching Google for {query}.",
+
                 False
+
             )
 
         # --------------------------
@@ -159,15 +211,21 @@ class CommandRouter:
             if not query:
 
                 return (
+
                     "Please tell me what you want to search on YouTube.",
+
                     False
+
                 )
 
             SearchService.youtube_search(query)
 
             return (
+
                 f"Searching YouTube for {query}.",
+
                 False
+
             )
 
         # --------------------------
@@ -177,8 +235,11 @@ class CommandRouter:
         elif any(word in words for word in CONFIG["exit"]):
 
             return (
+
                 "Goodbye Anurag. Have a wonderful day.",
+
                 True
+
             )
 
         # --------------------------
@@ -186,6 +247,9 @@ class CommandRouter:
         # --------------------------
 
         return (
+
             "Sorry. I do not know this command yet.",
+
             False
+
         )
